@@ -1,21 +1,12 @@
+# 🧩 3D Rubik's Cube
 
-An **interactive 3D rotating cube** built with **HTML, CSS, and JavaScript**.  
-Drag with your mouse or let it auto-rotate to view all sides!  
+A lightweight interactive **3D Rubik's Cube** built with **HTML, CSS, and JavaScript**. Rotate the cube with your mouse and enjoy a smooth browser-based experience—no frameworks or external libraries required.
 
-![p](a.png)
----
-![Preview](b.png)
-## Features
+### Features
 
-- Fully interactive 3D cube
-- Drag with mouse to rotate
-- Auto rotation when idle
-- Smooth CSS and JS animations
-- Responsive and centered in viewport
+* 🎲 Interactive 3D cube
+* 🖱️ Mouse drag controls
+* ⚡ Pure HTML, CSS & JavaScript
+* 🌐 Runs in any modern web browser
 
-## Usage
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/YOUR_USERNAME/cube-gallery.git
+**Open `index.html` in your browser or use VS Code Live Server to run the project.**

@@ -1,0 +1,505 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mh2</title>
+<style>
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #000000;
+}
+
+.credits {
+    width: 100%;
+    top: 90%;
+}
+
+.text {
+    text-align: center;
+    font-family: Helvetica;
+    font-size: .8rem;
+    color: rgb(0, 0, 0);
+    pointer-events: none;
+}
+
+.centered,
+.cube>.piece>.element>.sticker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.scene {
+    width: 100%;
+    height: 100%;
+    perspective: 1200px;
+    transform-style: preserve-3d;
+}
+
+.scene>.pivot {
+    width: 0;
+    height: 0;
+    transition: .18s;
+}
+
+.scene .anchor {
+    width: 2em;
+    height: 6em;
+}
+
+.scene div {
+    position: absolute;
+    transform-style: inherit;
+}
+
+#piece4>.element.top>.sticker {
+    background: #fff url("https://i.pinimg.com/736x/ce/58/c1/ce58c1d1278349c500426a7ef0f6908f.jpg") center center no-repeat !important;
+    background-size: 100% !important;
+}
+.cube {
+    font-size: 190%;
+    margin-left: -1em;
+    margin-top: -1em;
+}
+
+.cube>.piece {
+    width: 1.9em;
+    height: 1.9em;
+}
+
+.cube>.piece>.element {
+    width: 100%;
+    height: 100%;
+    background: #0A0A0A;
+    outline: 1px solid transparent;
+    border: 0.05em solid #0A0A0A;
+    border-radius: 10%;
+}
+
+.cube>.piece>.element.left {
+    transform: rotateX(0deg) rotateY(-90deg) rotateZ(180deg) translateZ(1em);
+}
+
+.cube>.piece>.element.right {
+    transform: rotateX(0deg) rotateY(90deg) rotateZ(90deg) translateZ(1em);
+}
+
+.cube>.piece>.element.back {
+    transform: rotateX(0deg) rotateY(180deg) rotateZ(-90deg) translateZ(1em);
+}
+
+.cube>.piece>.element.front {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(1em);
+}
+
+.cube>.piece>.element.bottom {
+    transform: rotateX(-90deg) rotateY(0deg) rotateZ(-90deg) translateZ(1em);
+}
+
+.cube>.piece>.element.top {
+    transform: rotateX(90deg) rotateY(0deg) rotateZ(180deg) translateZ(1em);
+}
+
+.cube>.piece>.element>.sticker {
+    transform: translateZ(2px);
+    width: 95%;
+    height: 95%;
+    border-radius: 10%;
+    outline: 1px solid transparent;
+    box-shadow: inset 0.05em 0.05em 0.2rem 0 rgba(255, 255, 255, 0.25), inset -0.05em -0.05em 0.2rem 0 rgba(0, 0, 0, 0.25);
+}
+
+.cube>.piece>.element>.sticker.blue {
+    background-color: #001ca8;
+}
+
+.cube>.piece>.element>.sticker.green {
+    background-color: #006E16;
+}
+
+.cube>.piece>.element>.sticker.white {
+    background-color: #DDD;
+}
+
+.cube>.piece>.element>.sticker.yellow {
+    background-color: #E0AE00;
+}
+
+.cube>.piece>.element>.sticker.orange {
+    background-color: #FF5000;
+}
+
+.cube>.piece>.element>.sticker.red {
+    background-color: #DF0500;
+}
+
+</style>
+</head>
+
+<body>
+    <div class="scene" id="scene">
+        <div class="pivot centered" id="pivot" style="transform: rotateX(-35deg) rotateY(-135deg);">
+            <div class="cube" id="cube">
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+                <div class="piece">
+                    <div class="element left"></div>
+                    <div class="element right"></div>
+                    <div class="element top"></div>
+                    <div class="element bottom"></div>
+                    <div class="element back"></div>
+                    <div class="element front"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="guide">
+        <div class="anchor" id="anchor3"
+            style="transform: translateZ(3px) translateY(-33.33%) rotate(-270deg) translateY(66.67%)"></div>
+        <div class="anchor" id="anchor2"
+            style="transform: translateZ(3px) translateY(-33.33%) rotate(-180deg) translateY(66.67%)"></div>
+        <div class="anchor" id="anchor1"
+            style="transform: translateZ(3px) translateY(-33.33%) rotate(-90deg) translateY(66.67%)"></div>
+        <div class="anchor" id="anchor0"
+            style="transform: translateZ(3px) translateY(-33.33%) rotate(0deg) translateY(66.67%)"></div>
+    </div>
+    <script>
+        const colors = ['blue', 'green', 'white', 'yellow', 'orange', 'red'];
+const pieces = document.getElementsByClassName('piece');
+
+
+function mx(i, j) {
+    return ([2, 4, 3, 5][j % 4 | 0] + i % 2 * ((j | 0) % 4 * 2 + 3) + 2 * (i / 2 | 0)) % 6;
+}
+
+function getAxis(face) {
+    return String.fromCharCode('X'.charCodeAt(0) + face / 2);
+}
+
+function assembleCube() {
+
+    function moveTo(face) {
+        id = id + (1 << face);
+
+        const newDiv = createDiv();
+        const attribute = `sticker ${colors[face]}`;
+
+        pieces[i].children[face]
+            .appendChild(newDiv)
+            .setAttribute('class', attribute);
+
+        const axis = getAxis(face);
+        const value = face % 2 * 4 - 2;
+
+        return `translate${axis}(${value}em)`;
+    }
+
+    for (var id, x, i = 0; id = 0, i < 26; i++) {
+        x = mx(i, i % 18);
+
+        const transform = `rotateX(0deg)${moveTo(i % 6)}${i > 5 ? moveTo(x) + (i > 17 ? moveTo(mx(x, x + 2)) : '') : ''}`
+        pieces[i].style.transform = transform;
+
+        const pieceId = `piece${id}`;
+        pieces[i].setAttribute('id', pieceId);
+    }
+}
+
+function createDiv() {
+    return document.createElement('div');
+}
+
+function getPieceBy(face, index, corner) {
+    const pieceId = `piece${(1 << face) + (1 << mx(face, index)) + (1 << mx(face, index + 1)) * corner}`;
+    return document.getElementById(pieceId);
+}
+
+
+function swapPieces(face, times) {
+    for (var i = 0; i < 6 * times; i++) {
+        var piece1 = getPieceBy(face, i / 2, i % 2);
+        var piece2 = getPieceBy(face, i / 2 + 1, i % 2);
+
+        for (var j = 0; j < 5; j++) {
+            var sticker1 = piece1.children[j < 4 ? mx(face, j) : face].firstChild;
+            var sticker2 = piece2.children[j < 4 ? mx(face, j + 1) : face].firstChild;
+            var className = sticker1 ? sticker1.className : '';
+
+            if (className) {
+                sticker1.className = sticker2.className;
+                sticker2.className = className;
+            }
+        }
+    }
+}
+
+function animateRotation(face, cw, currentTime) {
+    var k = .3 * (face % 2 * 2 - 1) * (2 * cw - 1);
+    var qubes = Array(9).fill(pieces[face]).map((value, index) => index ? getPieceBy(face, index / 2, index % 2) : value);
+
+    (function rotatePieces() {
+        var passed = Date.now() - currentTime;
+        var style = `rotate${getAxis(face)}(${k * passed * (passed < 300)}deg)`;
+
+        qubes.forEach((piece) => {
+            piece.style.transform = piece.style.transform.replace(/rotate.\(\S+\)/, style);
+        });
+
+        if (passed >= 300) {
+            return swapPieces(face, 3 - 2 * cw);
+        }
+
+        requestAnimationFrame(rotatePieces);
+    })();
+}
+
+function mouseDown(md_e) {
+    var startXY = pivot.style.transform.match(/-?\d+\.?\d*/g).map(Number);
+    var element = md_e.target.closest('.element');
+    var face = [].indexOf.call((element || cube).parentNode.children, element);
+
+    function mouseMove(mm_e) {
+        if (element) {
+            var gid = /\d/.exec(document.elementFromPoint(mm_e.pageX, mm_e.pageY).id);
+
+            if (gid && gid.input.includes('anchor')) {
+                mouseUp();
+
+                var e = element.parentNode.children[mx(face, Number(gid) + 3)].hasChildNodes();
+                animateRotation(mx(face, Number(gid) + 1 + 2 * e), e, Date.now());
+            }
+        }
+        else {
+            const transform = `rotateX(${startXY[0] - (mm_e.pageY - md_e.pageY) / 2}deg)rotateY(${startXY[1] + (mm_e.pageX - md_e.pageX) / 2}deg)`;
+            pivot.style.transform = transform;
+        }
+    }
+
+    function mouseUp() {
+        document.body.appendChild(guide);
+        scene.removeEventListener('mousemove', mouseMove);
+        document.removeEventListener('mouseup', mouseUp);
+        scene.addEventListener('mousedown', mouseDown);
+    }
+
+    (element || document.body).appendChild(guide);
+
+    scene.addEventListener('mousemove', mouseMove);
+    document.addEventListener('mouseup', mouseUp);
+    scene.removeEventListener('mousedown', mouseDown);
+}
+
+document.ondragstart = () => false
+
+window.addEventListener('load', assembleCube);
+scene.addEventListener('mousedown', mouseDown);  
+    </script>
+</body>
+
+</html>

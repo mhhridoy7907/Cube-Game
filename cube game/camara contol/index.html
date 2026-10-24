@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#080b14">
+<title>MH2 Finger Cube Controller</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080b14;color:#e8eefb;font:15px system-ui,sans-serif}
+main{max-width:700px;margin:auto;padding:16px}
+h1{font-size:22px;margin:8px 0}
+p{color:#9baac1;font-size:13px;line-height:1.5}
+.panel{background:#111827;border:1px solid #283449;border-radius:16px;padding:14px;margin:12px 0}
+.camera{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3}
+video,canvas{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;transform:scaleX(-1)}
+canvas{pointer-events:none}
+button{border:0;border-radius:10px;padding:13px;background:#0e9aaa;color:white;font-weight:700;width:100%;margin:5px 0}
+button.secondary{background:#263449}
+.status{padding:10px;border-radius:9px;background:#0b1220;font-size:13px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#fbbf24;margin-right:8px}
+small{color:#9baac1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:#0b1220;padding:10px;border-radius:9px;font-size:12px}
+.stat b{display:block;font-size:18px;color:#45e5f5;margin-top:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>MH2 Finger Cube Controller</h1>
+<p>Move your index finger to rotate the PC cube. Pinch your thumb and index finger together to enable precise movement.</p>
+
+<section class="panel">
+<div class="camera">
+<video id="video" autoplay muted playsinline></video>
+<canvas id="overlay"></canvas>
+</div>
+<button id="start">Start Selfie Camera</button>
+<button id="stop" class="secondary">Stop Camera</button>
+<div class="status"><span class="dot" id="dot"></span><span id="status">Waiting to start</span></div>
+</section>
+
+<section class="panel">
+<div class="grid">
+<div class="stat">Tracking<b id="tracking">OFF</b></div>
+<div class="stat">Gesture<b id="gesture">None</b></div>
+<div class="stat">Finger X<b id="fx">—</b></div>
+<div class="stat">Finger Y<b id="fy">—</b></div>
+</div>
+<p>Keep your hand visible. Pinch your thumb and index finger, then move your hand. Release the pinch to stop rotating.</p>
+</section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script>
+'use strict';
+
+const firebaseConfig = {
+ apiKey:"AIzaSyC43AL7crSDmLVfVRBgm1KzFREO2SvD-lc",
+ authDomain:"mh2-cube.firebaseapp.com",
+ databaseURL:"https://mh2-cube-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"mh2-cube",
+ storageBucket:"mh2-cube.firebasestorage.app",
+ messagingSenderId:"333146525112",
+ appId:"1:333146525112:web:23a63f198b4394fb61534d"
+};
+
+const $ = id => document.getElementById(id);
+const video = $('video');
+const canvas = $('overlay');
+const ctx = canvas.getContext('2d');
+
+let db, camera, hands;
+let running = false;
+let busy = false;
+let lastSent = 0;
+let sequence = 0;
+let previous = null;
+let pinchWasOn = false;
+let latestHand = null;
+
+try {
+ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+ db = firebase.database();
+ db.ref('.info/connected').on('value', s => {
+   if (s.val()) setStatus('Firebase connected','ok');
+   else setStatus('Firebase reconnecting','warn');
+ });
+} catch(e) {
+ setStatus('Firebase error: '+e.message,'bad');
+}
+
+function setStatus(message,kind='warn') {
+ $('status').textContent=message;
+ $('dot').style.background=kind==='ok'?'#34d399':kind==='bad'?'#fb7185':'#fbbf24';
+}
+
+function distance(a,b) {
+ return Math.hypot(a.x-b.x,a.y-b.y);
+}
+
+function resizeCanvas() {
+ const w=video.videoWidth||640, h=video.videoHeight||480;
+ if(canvas.width!==w||canvas.height!==h) {
+  canvas.width=w;
+  canvas.height=h;
+ }
+}
+
+function drawHand(landmarks) {
+ resizeCanvas();
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ if(!landmarks)return;
+ ctx.fillStyle='#45e5f5';
+ for(const p of landmarks) {
+  ctx.beginPath();
+  ctx.arc(p.x*canvas.width,p.y*canvas.height,5,0,Math.PI*2);
+  ctx.fill();
+ }
+ ctx.strokeStyle='#34d399';
+ ctx.lineWidth=3;
+ const links=[
+ [0,1],[1,2],[2,3],[3,4],
+ [0,5],[5,6],[6,7],[7,8],
+ [5,9],[9,10],[10,11],[11,12],
+ [9,13],[13,14],[14,15],[15,16],
+ [13,17],[17,18],[18,19],[19,20],[0,17]
+ ];
+ for(const [a,b] of links) {
+  ctx.beginPath();
+  ctx.moveTo(landmarks[a].x*canvas.width,landmarks[a].y*canvas.height);
+  ctx.lineTo(landmarks[b].x*canvas.width,landmarks[b].y*canvas.height);
+  ctx.stroke();
+ }
+}
+
+function handleResults(results) {
+ if(!running)return;
+ const lm=results.multiHandLandmarks?.[0];
+ drawHand(lm);
+
+ if(!lm) {
+  latestHand=null;
+  previous=null;
+  $('tracking').textContent='NO HAND';
+  $('gesture').textContent='None';
+  return;
+ }
+
+ // Index fingertip and thumb tip
+ const index=lm[8];
+ const thumb=lm[4];
+ const pinch=distance(index,thumb)<0.075;
+ const x=1-index.x; // mirrored selfie coordinates
+ const y=index.y;
+
+ latestHand={x,y,pinch};
+ $('tracking').textContent='ON';
+ $('gesture').textContent=pinch?'PINCH / MOVE':'Release to pause';
+ $('fx').textContent=x.toFixed(3);
+ $('fy').textContent=y.toFixed(3);
+
+ if(pinch&&!pinchWasOn) previous={x,y};
+ if(!pinch) previous=null;
+ pinchWasOn=pinch;
+
+ // Send only while pinching; limit network traffic to ~30 updates/sec.
+ const now=performance.now();
+ if(!pinch||now-lastSent<33||busy||!db)return;
+
+ lastSent=now;
+ const payload={
+  seq:++sequence,
+  x,y,
+  active:true,
+  pinch:true,
+  ts:Date.now(),
+  source:'mh2-finger-camera'
+ };
+
+ busy=true;
+ db.ref('mh2cube/handControl').set(payload)
+  .catch(err=>setStatus('Firebase write failed: '+err.message,'bad'))
+  .finally(()=>{busy=false;});
+}
+
+async function startCamera() {
+ if(running)return;
+ try {
+  if(!navigator.mediaDevices?.getUserMedia)
+   throw new Error('Camera needs HTTPS or localhost.');
+
+  setStatus('Requesting selfie camera permission...');
+  const stream=await navigator.mediaDevices.getUserMedia({
+   audio:false,
+   video:{facingMode:'user',width:{ideal:640},height:{ideal:480},frameRate:{ideal:30,max:30}}
+  });
+
+  video.srcObject=stream;
+  await video.play();
+
+  hands=new Hands({
+   locateFile:file=>'https://cdn.jsdelivr.net/npm/@mediapipe/hands/'+file
+  });
+
+  hands.setOptions({
+   maxNumHands:1,
+   modelComplexity:0,
+   minDetectionConfidence:0.6,
+   minTrackingConfidence:0.55
+  });
+
+  hands.onResults(handleResults);
+  camera=new Camera(video,{
+   onFrame:async()=>{
+    if(running&&!busy) {
+     try { await hands.send({image:video}); }
+     catch(e) { console.error(e); }
+    }
+   },
+   width:640,
+   height:480
+  });
+
+  running=true;
+  await camera.start();
+  setStatus('Selfie camera active. Pinch and move your finger.','ok');
+ } catch(e) {
+  running=false;
+  setStatus('Camera error: '+e.message,'bad');
+  console.error(e);
+ }
+}
+
+async function stopCamera() {
+ running=false;
+ previous=null;
+ latestHand=null;
+ pinchWasOn=false;
+
+ try { if(camera)camera.stop(); } catch(e){}
+ try { if(hands)await hands.close(); } catch(e){}
+ if(video.srcObject)video.srcObject.getTracks().forEach(t=>t.stop());
+ video.srcObject=null;
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ if(db) {
+  db.ref('mh2cube/handControl').update({
+   active:false,pinch:false,ts:Date.now(),seq:++sequence
+  }).catch(console.error);
+ }
+ $('tracking').textContent='OFF';
+ $('gesture').textContent='None';
+ setStatus('Camera stopped');
+}
+
+$('start').addEventListener('click',startCamera);
+$('stop').addEventListener('click',stopCamera);
+window.addEventListener('pagehide',()=>{
+ running=false;
+ if(video.srcObject)video.srcObject.getTracks().forEach(t=>t.stop());
+});
+</script>
+</body>
+</html>
